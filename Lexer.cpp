@@ -42,7 +42,8 @@ Token Lexer::number() {
 		}
 		_pos++;
 	}
-	float value = std::stof(_source.substr(start, _pos)); // substrは文字列を返すので、stofで浮動小数点数に変換
+	float value = std::stof(_source.substr(start, _pos)); 
+	// substrは文字列を返すので、stofで浮動小数点数に変換
 	return Token{ eTokenType::NUMBER, value };
 }
 
