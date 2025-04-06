@@ -1,5 +1,7 @@
 #include "Semantic.h"
 
+// 煩わしい引数とは、SemanticTypeのこと。
+// 引数によって意味値の種類は一つに決まる。
 Semantic::Semantic()
 	:_type(SemanticType::NONE), _number(0) {}
 
@@ -16,6 +18,8 @@ float Semantic::getNumber() const {
 	}
 	else {
 		std::cerr << "ExpressionError : cannot calculate non_number" << std::endl;
+		exit(-1);
+		//数字じゃないのにgetNumber()されたらそれは文法エラー。終了しましょう
 	}
 	return 0.f;
 }
