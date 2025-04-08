@@ -1,8 +1,10 @@
 #pragma once
 
-//単語の種類を表す列挙体
+#include <string>
+
 enum class eTokenType {
 	NUMBER,
+	STRING,
 	PLUS,
 	MINUS,
 	MULTIPLY,
@@ -15,8 +17,19 @@ enum class eTokenType {
 	ERROR
 };
 
-//単語のデータを表す構造体
-struct Token {
-	eTokenType type;
-	float value;
+class Token {
+public:
+	Token(eTokenType type);
+	Token(float number);
+	Token(std::string string);
+	~Token() = default;
+
+	eTokenType getType() const;
+	float getNumber() const;
+	std::string getString() const;
+
+private:
+	eTokenType _type;
+	float _number;
+	std::string _string;
 };

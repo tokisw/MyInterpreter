@@ -1,20 +1,15 @@
 #include "Parser.h"
 
 Parser::Parser(Lexer lexer)
-    :_lexer(lexer)
-{
-    _currentToken = _lexer.getNextToken();
-    // 一単語目のデータを得ておく
-}
+    :_lexer(lexer), _currentToken(_lexer.getNextToken()) {}
 
 void Parser::shift(eTokenType type) {
-    if (type == _currentToken.type) {
+    if (type == _currentToken.getType()) {
         _currentToken = _lexer.getNextToken();
     }
     else {
-        std::cerr << "ShiftError : unexpected token" << std::endl;
+        std::cerr << "SyntaxError : unexpected token was shifted" << std::endl;
         exit(-1);
-        // 単語の種類が想定していたもと異なるときにこのエラーが出る
     }
 }
 
@@ -22,10 +17,9 @@ std::unique_ptr<Node> Parser::parse() {
     return program();
 }
 
-// * の部分は再帰関数で
 std::unique_ptr<Node> Parser::program() {
     auto left = statement();
-    if (_currentToken.type == eTokenType::END) {
+    if (_currentToken.getType() == eTokenType::END) {
         return left;
     }
     else {
@@ -36,28 +30,26 @@ std::unique_ptr<Node> Parser::program() {
 }
 
 std::unique_ptr<Node> Parser::statement() {
-    if (_currentToken.type == eTokenType::PRINT) {
-        shift(eTokenType::PRINT);     // print
-        shift(eTokenType::LPAREN);    // (
-        auto expr = expression();     // 式
-        shift(eTokenType::RPAREN);    // )
-        shift(eTokenType::SEMICOLON); // ;
+    if (_currentToken.getType() == eTokenType::PRINT) {
+        shift(eTokenType::PRINT);
+        shift(eTokenType::LPAREN);
+        auto expr = expression();
+        shift(eTokenType::RPAREN);
+        shift(eTokenType::SEMICOLON);
         return std::make_unique<UnaryNode>(eTokenType::PRINT, std::move(expr));
     }
     else {
-        // 今回はPRINTのみだが、関数とかも実装すればここに来る。
         std::cerr << "ParserError : wrong syntax" << std::endl;
         exit(-1);
     }
     return nullptr;
 }
 
-// expression - term - factor の流れは再帰風でいける
 std::unique_ptr<Node> Parser::expression() {
     auto left = term();
     
-    while (_currentToken.type == eTokenType::PLUS || _currentToken.type == eTokenType::MINUS) {
-        eTokenType op = _currentToken.type;
+    while (_currentToken.getType() == eTokenType::PLUS || _currentToken.getType() == eTokenType::MINUS) {
+        eTokenType op = _currentToken.getType();
         shift(op);
         auto right = term();
         left = std::make_unique<BinaryNode>(op, std::move(left), std::move(right));
@@ -69,8 +61,8 @@ std::unique_ptr<Node> Parser::expression() {
 std::unique_ptr<Node> Parser::term() {
     auto left = factor();
 
-    while (_currentToken.type == eTokenType::MULTIPLY|| _currentToken.type == eTokenType::DIVISION) {
-        eTokenType op = _currentToken.type;
+    while (_currentToken.getType() == eTokenType::MULTIPLY || _currentToken.getType() == eTokenType::DIVISION) {
+        eTokenType op = _currentToken.getType();
         shift(op);
         auto right = factor();
         left = std::make_unique<BinaryNode>(op, std::move(left), std::move(right));
@@ -80,35 +72,26 @@ std::unique_ptr<Node> Parser::term() {
 }
 
 std::unique_ptr<Node> Parser::factor() {
-    if (_currentToken.type == eTokenType::NUMBER) {
-        float num = _currentToken.value;
-        shift(eTokenType::NUMBER);
-        return std::make_unique<NumberNode>(num);
-    }
-    else if (_currentToken.type == eTokenType::LPAREN) {
-        shift(eTokenType::LPAREN); // (
-        auto expr = expression();  // 式
-        shift(eTokenType::RPAREN); // )
-        return expr;
-    }
-    else {
-        std::cerr << "ParserError : unknown token" << std::endl;
-        exit(-1);
+    switch (_currentToken.getType()) {
+        case eTokenType::NUMBER: {
+            float num = _currentToken.getNumber();
+            shift(eTokenType::NUMBER);
+            return std::make_unique<NumberNode>(num);
+        }
+        case eTokenType::LPAREN: {
+            shift(eTokenType::LPAREN);
+            auto expr = expression();
+            shift(eTokenType::RPAREN);
+            return expr;
+        }
+        case eTokenType::STRING: {
+            std::string str = _currentToken.getString();
+            shift(eTokenType::STRING);
+            return std::make_unique<StringNode>(str);
+        }
+        default:
+            std::cerr << "ParserError : unknown token" << std::endl;
+            exit(-1);
     }
     return nullptr;
 }
-
-/*
-
-program ::= ( statement )*
-
-statement ::= PRINT "(" expression ")" ";"
-
-expression ::= term ( ( "+" | "-" ) temr )*
-
-term ::= factor ( ( "*" | "/" )  factor )*
-
-factor ::= NUMBER
-           | "(" expression ")"
-
-*/

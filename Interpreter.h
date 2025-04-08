@@ -7,20 +7,18 @@
 #include "Parser.h"
 #include "Node.h"
 
-// インタプリタのクラス
 class Interpreter {
 public:
 	Interpreter(std::string source);
 	~Interpreter() = default;
 
-	void interpret(); // 解釈実行とも呼ばれる
+	void interpret();
 
 private:
-	std::unique_ptr<Node> _ast; // 抽象木構造。実行しやすい
+	std::unique_ptr<Node> _ast;
 
-	Semantic action(std::unique_ptr<Node> node); // 再帰関数
+	Semantic action(std::unique_ptr<Node> node);
 
-	//関数やオペレータ計算とかは関数で。わかりやすさ大事。
 	void print(Semantic sem);
 	Semantic plus(Semantic left, Semantic right);
 	Semantic minus(Semantic left, Semantic right);

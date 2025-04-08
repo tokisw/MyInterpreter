@@ -1,25 +1,26 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 
-//意味値の種類を表す列挙体
 enum class SemanticType {
 	NONE,
-	NUMBER
+	NUMBER,
+	STRING
 };
 
-//意味値のデータを持つクラス
 class Semantic {
 public:
-	// コンストラクタ。オーバーライドで煩わしい引数設定をへらせます。
 	Semantic();
 	Semantic(float number);
+	Semantic(std::string string);
 
-	SemanticType getType() const; // 意味値の種類を返す
-	float getNumber() const;      // 意味値の種類が数字だった場合のみ、その値を返す
+	SemanticType getType() const;
+	float getNumber() const;
+	std::string getString() const;
 
 private:
 	SemanticType _type;
-	// 今回は浮動小数点数のみ。文字列とかも実装したらここに足していこう
 	float _number;
+	std::string _string;
 };

@@ -8,6 +8,14 @@ float NumberNode::getNumber() const{
 }
 
 
+StringNode::StringNode(std::string str)
+	:_string(str) {}
+
+std::string StringNode::getString() const {
+	return _string;
+}
+
+
 UnaryNode::UnaryNode(eTokenType op, std::unique_ptr<Node> node)
 	:_op(op), _node(std::move(node)) {}
 
@@ -21,12 +29,11 @@ eTokenType UnaryNode::getOp() const {
 
 
 BinaryNode::BinaryNode(eTokenType op, std::unique_ptr<Node> left, std::unique_ptr<Node> right)
-	:_op(op), _left(std::move(left)), _right(std::move(right)) {} // move í¥ëÂéñÅI
+	:_op(op), _left(std::move(left)), _right(std::move(right)) {}
 
 void BinaryNode::getNodes(std::unique_ptr<Node>& left, std::unique_ptr<Node>& right) {
 	left = std::move(_left);
 	right = std::move(_right);
-	//move ëÂéñÇæÇÊÇŸÇÒÇ∆Ç…
 }
 
 eTokenType BinaryNode::getOp() const {

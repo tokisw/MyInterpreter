@@ -133,6 +133,7 @@
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Semantic.cpp" />
+    <ClCompile Include="Token.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interpreter.h" />
@@ -141,6 +142,9 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Semantic.h" />
     <ClInclude Include="Token.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Program.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
