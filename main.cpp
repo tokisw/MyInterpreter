@@ -15,8 +15,9 @@ int main() {
 			std::cout << line << std::endl;
 		}
 	}
+	std::cout << "===AST===" << std::endl;
 	std::unique_ptr<Interpreter> interpreter = std::make_unique<Interpreter>(source);
-	std::cout << "===Result===" << std::endl;
+	std::cout << std::endl << "===Result===" << std::endl;
 	interpreter->interpret();
 	return 0;
 }

@@ -3,6 +3,9 @@
 Token::Token(eTokenType type)
 	: _type(type), _number(0.f), _string("") {}
 
+Token::Token(eTokenType type, std::string name) 
+	:_type(type), _string(name) {}
+
 Token::Token(float number)
 	: _number(number), _type(eTokenType::NUMBER), _string("") {}
 

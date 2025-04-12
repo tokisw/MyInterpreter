@@ -6,7 +6,8 @@
 enum class SemanticType {
 	NONE,
 	NUMBER,
-	STRING
+	STRING,
+	VARIABLE
 };
 
 class Semantic {
@@ -14,6 +15,7 @@ public:
 	Semantic();
 	Semantic(float number);
 	Semantic(std::string string);
+	Semantic(std::string name, float val);
 
 	SemanticType getType() const;
 	float getNumber() const;

@@ -13,6 +13,9 @@ enum class eTokenType {
 	RPAREN,
 	LPAREN,
 	PRINT,
+	ASSIGN,
+	VARDEF,
+	VARNAME,
 	END,
 	ERROR
 };
@@ -20,6 +23,7 @@ enum class eTokenType {
 class Token {
 public:
 	Token(eTokenType type);
+	Token(eTokenType type, std::string name);
 	Token(float number);
 	Token(std::string string);
 	~Token() = default;

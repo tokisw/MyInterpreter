@@ -71,9 +71,11 @@ Token Lexer::symbol() {
 	if (sym == "print") {
 		return Token(eTokenType::PRINT);
 	}
+	else if (sym == "var") {
+		return Token(eTokenType::VARDEF);
+	}
 	else {
-		std::cerr << "LexError : unknown symbol" << std::endl;
-		exit(-1);
+		return Token(eTokenType::VARNAME, sym);
 	}
 	return Token(eTokenType::ERROR);
 }
@@ -87,6 +89,7 @@ Token Lexer::sign() {
 		case '(': _pos++; return Token(eTokenType::LPAREN);
 		case ')': _pos++; return Token(eTokenType::RPAREN);
 		case ';': _pos++; return Token(eTokenType::SEMICOLON);
+		case '=': _pos++; return Token(eTokenType::ASSIGN);
 		default: std::cerr << "LexerError : Unknown sign" << std::endl; exit(-1);
 	}
 	return Token(eTokenType::ERROR);

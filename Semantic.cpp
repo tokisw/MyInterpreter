@@ -9,12 +9,15 @@ Semantic::Semantic(float number)
 Semantic::Semantic(std::string string)
 	:_type(SemanticType::STRING), _number(0), _string(string) {}
 
+Semantic::Semantic(std::string name, float val)
+	:_type(SemanticType::VARIABLE), _string(name), _number(val) {}
+
 SemanticType Semantic::getType() const {
 	return _type;
 }
 
 float Semantic::getNumber() const {
-	if (_type == SemanticType::NUMBER) {
+	if (_type == SemanticType::NUMBER || _type == SemanticType::VARIABLE) {
 		return _number;
 	}
 	else {
@@ -25,7 +28,7 @@ float Semantic::getNumber() const {
 }
 
 std::string Semantic::getString() const {
-	if (_type == SemanticType::STRING) {
+	if (_type == SemanticType::STRING || _type == SemanticType::VARIABLE) {
 		return _string;
 	}
 	else {
