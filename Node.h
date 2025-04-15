@@ -59,9 +59,9 @@ private:
 	std::unique_ptr<Node> _left, _right;
 };
 
-class VariableNode : public Node {
+class SymbolNode : public Node {
 public:
-	explicit VariableNode(std::string name);
+	explicit SymbolNode(std::string name);
 	void show(int index) override;
 
 	std::string getName() const;

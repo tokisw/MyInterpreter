@@ -1,8 +1,4 @@
-var a = 1;
-var b = 2;
-var c = 3;
-
-print(a+b+c);
-
-a = b + c * 3;
-print(a);
+func sum(a, b, c) {
+	val sum = a + b + c;
+	print(sum);
+}

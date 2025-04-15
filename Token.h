@@ -3,21 +3,25 @@
 #include <string>
 
 enum class eTokenType {
-	NUMBER,
-	STRING,
-	PLUS,
-	MINUS,
-	MULTIPLY,
-	DIVISION,
-	SEMICOLON,
-	RPAREN,
-	LPAREN,
-	PRINT,
-	ASSIGN,
-	VARDEF,
-	VARNAME,
-	END,
-	ERROR
+	NUMBER,    // êîéö
+	STRING,    // ï∂éöóÒ
+	PLUS,      // +
+	MINUS,     // -
+	MULTIPLY,  // *
+	DIVISION,  // /
+	SEMICOLON, // ;
+	RPAREN,    // (
+	LPAREN,    // )
+	LBRACE,    // {
+	RBRACE,    // }
+	COMMA,     // ,
+	PRINT,     // print
+	ASSIGN,    // =
+	VARDEF,    // var
+	SYMBOL,    // ïœêîñºÅEä÷êîñº
+	FUNCDEF,   // func
+	END,       // ï∂ññ
+	ERROR      // ÉGÉâÅ[
 };
 
 class Token {

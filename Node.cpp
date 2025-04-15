@@ -72,22 +72,25 @@ void BinaryNode::show(int index) {
 		case eTokenType::ASSIGN: c = "="; break;
 		case eTokenType::SEMICOLON: c = ";"; break;
 		case eTokenType::VARDEF: c = "VAR"; break;
+		case eTokenType::COMMA: c = ","; break;
+		case eTokenType::FUNCDEF: c = "FUNC"; break;
+		case eTokenType::LPAREN: c = "()"; break;
 		default: c = "error"; break;
 	}
 	std::cout << a << "Binary(" << c << ")\n";
-	_left->show(index + 4);
-	_right->show(index + 4);
+	if (_left != nullptr) _left->show(index + 4);
+	if (_right != nullptr) _right->show(index + 4);
 }
 
 
-VariableNode::VariableNode(std::string name)
+SymbolNode::SymbolNode(std::string name)
 	:_name(name) {}
 
-std::string VariableNode::getName() const {
+std::string SymbolNode::getName() const {
 	return _name;
 }
 
-void VariableNode::show(int index) {
+void SymbolNode::show(int index) {
 	std::string a(index, ' ');
-	std::cout << a << "Variable(" << _name << ")\n";
+	std::cout << a << "Symbol(" << _name << ")\n";
 }

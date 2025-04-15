@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <memory>
+#include <memory>$
 #include "Lexer.h"
 #include "Node.h"
 
@@ -20,7 +20,9 @@ private:
 
 	std::unique_ptr<Node> program();
 	std::unique_ptr<Node> statement();
+	std::unique_ptr<Node> compound();
 	std::unique_ptr<Node> declaration();
+	std::unique_ptr<Node> call_func();
 	std::unique_ptr<Node> expression();
 	std::unique_ptr<Node> term();
 	std::unique_ptr<Node> factor();
@@ -33,14 +35,18 @@ program ::= ( statement )*
 　文
 statement ::= PRINT "(" expression ")" ";"
               | define_var ";"
-			  | variable_name  "=" expression ";"
+			  | SYMBOL  "=" expression ";"
+			  | compound
+			  @ call_func ";"
 
-　複合文
-compound_statement ::= "{" statement* "}"
+compound ::= "{" statement* "}"
 
 　宣言
-declaration ::= VAR variable_name ( "=" expression )
-			    | FUNC function_name "(" ( argment ( "," argment )* ) ")" compound_statement
+declaration ::= VAR SYMBOL ( "=" expression )
+			    | FUNC SYMBOL "(" ( arg_name ( "," arg_name )* ) ")" compound
+
+　関数呼び出し
+@ call_func ::= SYMBOL "(" ( value ( "," value )* ")"
 
 　式
 expression ::= term ( ( "+" | "-" ) temr )*
@@ -52,5 +58,6 @@ term ::= factor ( ( "*" | "/" )  factor )*
 factor ::= NUMBER
 		   | STRING
 		   | "(" expression ")"
-		   | variable_name
+		   | SYMBOL
+		   @ call_func
 */

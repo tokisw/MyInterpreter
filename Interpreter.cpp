@@ -7,7 +7,9 @@ Interpreter::Interpreter(std::string source)
 	Parser parser(lexer);
 	_ast = parser.parse();
 
-	_ast->show(0);
+	if (_ast != nullptr) {
+		_ast->show(0);
+	}
 }
 
 void Interpreter::interpret() {
@@ -30,7 +32,7 @@ Semantic Interpreter::action(std::unique_ptr<Node> node) {
 	else if (StringNode* str = dynamic_cast<StringNode*>(node.get())) {
 		return Semantic(str->getString());
 	}
-	else if (VariableNode* var = dynamic_cast<VariableNode*>(node.get())) {
+	else if (SymbolNode* var = dynamic_cast<SymbolNode*>(node.get())) {
 		return Semantic(var->getName(), getVar(var->getName()));
 	}
 	else if (UnaryNode* unary = dynamic_cast<UnaryNode*>(node.get())) {
@@ -106,6 +108,7 @@ float Interpreter::getVar(std::string name) {
 		//std::cerr << "InterpretError : called not declared variable" << std::endl;
 		//exit(-1);
 	}
+	return 0;
 }
 
 Semantic Interpreter::plus(Semantic left, Semantic right) {
