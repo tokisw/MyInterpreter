@@ -56,6 +56,11 @@ std::unique_ptr<Node> Parser::statement() {
             shift(eTokenType::SEMICOLON);
             return std::make_unique<BinaryNode>(eTokenType::ASSIGN, std::move(var), std::move(expr));
         }
+        else if (_currentToken.getType() == eTokenType::LPAREN) {
+            auto call = call_func();
+            shift(eTokenType::SEMICOLON);
+            return call;
+        }
     }
     else if (_currentToken.getType() == eTokenType::LBRACE) {
         return compound();
@@ -176,7 +181,12 @@ std::unique_ptr<Node> Parser::factor() {
         case eTokenType::SYMBOL: {
             std::string name = _currentToken.getString();
             shift(eTokenType::SYMBOL);
-            return std::make_unique<SymbolNode>(name);
+            if (_currentToken.getType() == eTokenType::LPAREN) {
+                return call_func();
+            }
+            else {
+                return std::make_unique<SymbolNode>(name);
+            }
         }
         default:
             std::cerr << "ParserError : unknown token" << std::endl;
