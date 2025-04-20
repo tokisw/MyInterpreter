@@ -59,6 +59,19 @@ private:
 	std::unique_ptr<Node> _left, _right;
 };
 
+class TernaryNode : public Node {
+public:
+	explicit TernaryNode(eTokenType op, std::unique_ptr<Node> left, std::unique_ptr<Node> center, std::unique_ptr<Node> right);
+	void show(int index) override;
+
+	void getNodes(std::unique_ptr<Node>& left, std::unique_ptr<Node>& center, std::unique_ptr<Node>& right);
+	eTokenType getOp() const;
+
+private:
+	eTokenType _op;
+	std::unique_ptr<Node> _left, _center, _right;
+};
+
 class SymbolNode : public Node {
 public:
 	explicit SymbolNode(std::string name);

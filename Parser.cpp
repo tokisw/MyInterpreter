@@ -48,16 +48,16 @@ std::unique_ptr<Node> Parser::statement() {
         return def;
     }
     else if (_currentToken.getType() == eTokenType::SYMBOL) {
-        auto var = std::make_unique<SymbolNode>(_currentToken.getString());
+        auto sym = std::make_unique<SymbolNode>(_currentToken.getString());
         shift(eTokenType::SYMBOL);
         if (_currentToken.getType() == eTokenType::ASSIGN) {
             shift(eTokenType::ASSIGN);
             auto expr = expression();
             shift(eTokenType::SEMICOLON);
-            return std::make_unique<BinaryNode>(eTokenType::ASSIGN, std::move(var), std::move(expr));
+            return std::make_unique<BinaryNode>(eTokenType::ASSIGN, std::move(sym), std::move(expr));
         }
         else if (_currentToken.getType() == eTokenType::LPAREN) {
-            auto call = call_func();
+            auto call = call_func(std::move(sym));
             shift(eTokenType::SEMICOLON);
             return call;
         }
@@ -107,31 +107,42 @@ std::unique_ptr<Node> Parser::declaration() {
         std::unique_ptr<Node> name = std::make_unique<SymbolNode>(_currentToken.getString());
         shift(eTokenType::SYMBOL);
         shift(eTokenType::LPAREN);
-        std::unique_ptr<Node> argments = nullptr;
+        std::unique_ptr<Node> arguments = nullptr;
 
         if (_currentToken.getType() == eTokenType::SYMBOL) {
-            argments = std::make_unique<SymbolNode>(_currentToken.getString());
+            arguments = std::make_unique<SymbolNode>(_currentToken.getString());
             shift(eTokenType::SYMBOL);
                 while (_currentToken.getType() == eTokenType::COMMA) { 
                     shift(eTokenType::COMMA);
                     auto arg = std::make_unique<SymbolNode>(_currentToken.getString());
-                    argments = std::make_unique<BinaryNode>(eTokenType::COMMA, std::move(argments), std::move(arg));
+                    arguments = std::make_unique<BinaryNode>(eTokenType::COMMA, std::move(arguments), std::move(arg));
                     shift(eTokenType::SYMBOL);
                 }
         }
         shift(eTokenType::RPAREN);
         auto program = compound();
-        
-        auto arg_prog = std::make_unique<BinaryNode>(eTokenType::LPAREN, std::move(argments), std::move(program));
-        auto func = std::make_unique<BinaryNode>(eTokenType::FUNCDEF, std::move(name), std::move(arg_prog));
-
-        return func;
+        return std::make_unique<TernaryNode>(eTokenType::FUNCDEF, std::move(name), std::move(arguments), std::move(program));
     }
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::call_func() {
-    return nullptr;
+std::unique_ptr<Node> Parser::call_func(std::unique_ptr<Node> symbol_name) {
+    shift(eTokenType::LPAREN);
+
+    std::unique_ptr<Node> arg = nullptr;
+
+    if (_currentToken.getType() != eTokenType::RPAREN) {
+        arg = expression();
+
+        while (_currentToken.getType() == eTokenType::COMMA) {
+            shift(eTokenType::COMMA);
+            auto expr = expression();
+            arg = std::make_unique<BinaryNode>(eTokenType::COMMA, std::move(arg), std::move(expr));
+        }
+    }
+    shift(eTokenType::RPAREN);
+    auto call = std::make_unique<BinaryNode>(eTokenType::FUNC, std::move(symbol_name), std::move(arg));
+    return call;
 }
 
 std::unique_ptr<Node> Parser::expression() {
@@ -179,13 +190,13 @@ std::unique_ptr<Node> Parser::factor() {
             return std::make_unique<StringNode>(str);
         }
         case eTokenType::SYMBOL: {
-            std::string name = _currentToken.getString();
+            auto sym = std::make_unique<SymbolNode>(_currentToken.getString());
             shift(eTokenType::SYMBOL);
             if (_currentToken.getType() == eTokenType::LPAREN) {
-                return call_func();
+                return call_func(std::move(sym));
             }
             else {
-                return std::make_unique<SymbolNode>(name);
+                return sym;
             }
         }
         default:

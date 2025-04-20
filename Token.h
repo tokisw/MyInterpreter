@@ -20,6 +20,7 @@ enum class eTokenType {
 	VARDEF,    // var
 	SYMBOL,    // 変数名・関数名
 	FUNCDEF,   // func
+	FUNC,      // 関数呼び出し
 	END,       // 文末
 	ERROR      // エラー
 };

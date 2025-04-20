@@ -22,7 +22,7 @@ private:
 	std::unique_ptr<Node> statement();
 	std::unique_ptr<Node> compound();
 	std::unique_ptr<Node> declaration();
-	std::unique_ptr<Node> call_func();
+	std::unique_ptr<Node> call_func(std::unique_ptr<Node> symbol_name);
 	std::unique_ptr<Node> expression();
 	std::unique_ptr<Node> term();
 	std::unique_ptr<Node> factor();
@@ -37,7 +37,7 @@ statement ::= PRINT "(" expression ")" ";"
               | define_var ";"
 			  | SYMBOL  "=" expression ";"
 			  | compound
-			  @ call_func ";"
+			  | call_func ";"
 
 compound ::= "{" statement* "}"
 
@@ -46,7 +46,7 @@ declaration ::= VAR SYMBOL ( "=" expression )
 			    | FUNC SYMBOL "(" ( arg_name ( "," arg_name )* ) ")" compound
 
 Å@ä÷êîåƒÇ—èoÇµ
-@ call_func ::= SYMBOL "(" ( value ( "," value )* ")"
+@ call_func ::= SYMBOL "(" ( expression ( "," expression )* ")"
 
 Å@éÆ
 expression ::= term ( ( "+" | "-" ) temr )*
@@ -59,5 +59,5 @@ factor ::= NUMBER
 		   | STRING
 		   | "(" expression ")"
 		   | SYMBOL
-		   @ call_func
+		   | call_func
 */

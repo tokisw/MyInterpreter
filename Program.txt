@@ -1,5 +1,18 @@
-func sum(a, b) {
-	print(a+b);
+func niko(a, b) {
+	print(a + b);
 }
 
-print("unchi");
+func sanko(a, b, c) {
+	print(a + b + c);
+}
+
+func yonko(a, b, c, d) {
+	print(a + b + c + d);
+}
+
+func hello() {
+	print("hello");
+}
+
+hello();
+hello();

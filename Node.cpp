@@ -73,8 +73,7 @@ void BinaryNode::show(int index) {
 		case eTokenType::SEMICOLON: c = ";"; break;
 		case eTokenType::VARDEF: c = "VAR"; break;
 		case eTokenType::COMMA: c = ","; break;
-		case eTokenType::FUNCDEF: c = "FUNC"; break;
-		case eTokenType::LPAREN: c = "()"; break;
+		case eTokenType::FUNC: c = "callFunc"; break;
 		default: c = "error"; break;
 	}
 	std::cout << a << "Binary(" << c << ")\n";
@@ -82,6 +81,32 @@ void BinaryNode::show(int index) {
 	if (_right != nullptr) _right->show(index + 4);
 }
 
+
+TernaryNode::TernaryNode(eTokenType op, std::unique_ptr<Node> left, std::unique_ptr<Node> center, std::unique_ptr<Node> right)
+	:_op(op), _left(std::move(left)), _right(std::move(right)), _center(std::move(center)) {}
+
+void TernaryNode::getNodes(std::unique_ptr<Node>& left, std::unique_ptr<Node>& center, std::unique_ptr<Node>& right) {
+	left = std::move(_left);
+	center = std::move(_center);
+	right = std::move(_right);
+}
+
+eTokenType TernaryNode::getOp() const {
+	return _op;
+}
+
+void TernaryNode::show(int index) {
+	std::string a(index, ' ');
+	std::string c = "";
+	switch (_op) {
+		case eTokenType::FUNCDEF: c = "FUNC"; break;
+		default: c = "error"; break;
+	}
+	std::cout << a << "Ternary(" << c << ")\n";
+	if (_left != nullptr) _left->show(index + 4);
+	if (_center != nullptr) _center->show(index + 4);
+	if (_right != nullptr) _right->show(index + 4);
+}
 
 SymbolNode::SymbolNode(std::string name)
 	:_name(name) {}
