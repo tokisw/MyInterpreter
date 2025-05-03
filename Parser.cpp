@@ -13,30 +13,30 @@ void Parser::shift(eTokenType type) {
     }
 }
 
-std::unique_ptr<Node> Parser::parse() {
+std::shared_ptr<Node> Parser::parse() {
     return program();
 }
 
-std::unique_ptr<Node> Parser::program() {
+std::shared_ptr<Node> Parser::program() {
     auto left = statement();
     if (_currentToken.getType() == eTokenType::END) {
         return left;
     }
     else {
         auto right = program();
-        return std::make_unique<BinaryNode>(eTokenType::SEMICOLON, std::move(left), std::move(right));
+        return std::make_shared<BinaryNode>(eTokenType::SEMICOLON, left, right);
     }
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::statement() {
+std::shared_ptr<Node> Parser::statement() {
     if (_currentToken.getType() == eTokenType::PRINT) {
         shift(eTokenType::PRINT);
         shift(eTokenType::LPAREN);
         auto expr = expression();
         shift(eTokenType::RPAREN);
         shift(eTokenType::SEMICOLON);
-        return std::make_unique<UnaryNode>(eTokenType::PRINT, std::move(expr));
+        return std::make_shared<UnaryNode>(eTokenType::PRINT, expr);
     }
     else if (_currentToken.getType() == eTokenType::VARDEF) {
         auto dec = declaration();
@@ -48,16 +48,16 @@ std::unique_ptr<Node> Parser::statement() {
         return def;
     }
     else if (_currentToken.getType() == eTokenType::SYMBOL) {
-        auto sym = std::make_unique<SymbolNode>(_currentToken.getString());
+        auto sym = std::make_shared<SymbolNode>(_currentToken.getString());
         shift(eTokenType::SYMBOL);
         if (_currentToken.getType() == eTokenType::ASSIGN) {
             shift(eTokenType::ASSIGN);
             auto expr = expression();
             shift(eTokenType::SEMICOLON);
-            return std::make_unique<BinaryNode>(eTokenType::ASSIGN, std::move(sym), std::move(expr));
+            return std::make_shared<BinaryNode>(eTokenType::ASSIGN, sym, expr);
         }
         else if (_currentToken.getType() == eTokenType::LPAREN) {
-            auto call = call_func(std::move(sym));
+            auto call = call_func(sym);
             shift(eTokenType::SEMICOLON);
             return call;
         }
@@ -72,20 +72,20 @@ std::unique_ptr<Node> Parser::statement() {
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::compound() {
+std::shared_ptr<Node> Parser::compound() {
     shift(eTokenType::LBRACE);
 
-    std::unique_ptr<Node> left = statement();
+    std::shared_ptr<Node> left = statement();
     while (_currentToken.getType() != eTokenType::RBRACE) {
         auto right = statement();
-        left = std::make_unique<BinaryNode>(eTokenType::SEMICOLON, std::move(left), std::move(right));
+        left = std::make_shared<BinaryNode>(eTokenType::SEMICOLON, left, right);
     }
 
     shift(eTokenType::RBRACE);
     return left;
 }
 
-std::unique_ptr<Node> Parser::declaration() {
+std::shared_ptr<Node> Parser::declaration() {
     if (_currentToken.getType() == eTokenType::VARDEF) {
         shift(eTokenType::VARDEF);
         if (_currentToken.getType() != eTokenType::SYMBOL) {
@@ -94,42 +94,42 @@ std::unique_ptr<Node> Parser::declaration() {
         }
         std::string name = _currentToken.getString();
         shift(eTokenType::SYMBOL);
-        std::unique_ptr<Node> expr = std::make_unique<NumberNode>(0);
-        std::unique_ptr<Node> var = std::make_unique<SymbolNode>(name);
+        std::shared_ptr<Node> expr = std::make_shared<NumberNode>(0);
+        std::shared_ptr<Node> var = std::make_shared<SymbolNode>(name);
         if (_currentToken.getType() == eTokenType::ASSIGN) {
             shift(eTokenType::ASSIGN);
             expr = expression();
         }
-        return std::make_unique<BinaryNode>(eTokenType::VARDEF, std::move(var), std::move(expr));
+        return std::make_shared<BinaryNode>(eTokenType::VARDEF, var, expr);
     }
     else if (_currentToken.getType() == eTokenType::FUNCDEF) {
         shift(eTokenType::FUNCDEF);
-        std::unique_ptr<Node> name = std::make_unique<SymbolNode>(_currentToken.getString());
+        std::shared_ptr<Node> name = std::make_shared<SymbolNode>(_currentToken.getString());
         shift(eTokenType::SYMBOL);
         shift(eTokenType::LPAREN);
-        std::unique_ptr<Node> arguments = nullptr;
+        std::shared_ptr<Node> arguments = nullptr;
 
         if (_currentToken.getType() == eTokenType::SYMBOL) {
-            arguments = std::make_unique<SymbolNode>(_currentToken.getString());
+            arguments = std::make_shared<SymbolNode>(_currentToken.getString());
             shift(eTokenType::SYMBOL);
                 while (_currentToken.getType() == eTokenType::COMMA) { 
                     shift(eTokenType::COMMA);
-                    auto arg = std::make_unique<SymbolNode>(_currentToken.getString());
-                    arguments = std::make_unique<BinaryNode>(eTokenType::COMMA, std::move(arguments), std::move(arg));
+                    auto arg = std::make_shared<SymbolNode>(_currentToken.getString());
+                    arguments = std::make_shared<BinaryNode>(eTokenType::COMMA, arguments, arg);
                     shift(eTokenType::SYMBOL);
                 }
         }
         shift(eTokenType::RPAREN);
         auto program = compound();
-        return std::make_unique<TernaryNode>(eTokenType::FUNCDEF, std::move(name), std::move(arguments), std::move(program));
+        return std::make_shared<TernaryNode>(eTokenType::FUNCDEF, name, arguments, program);
     }
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::call_func(std::unique_ptr<Node> symbol_name) {
+std::shared_ptr<Node> Parser::call_func(std::shared_ptr<Node> symbol_name) {
     shift(eTokenType::LPAREN);
 
-    std::unique_ptr<Node> arg = nullptr;
+    std::shared_ptr<Node> arg = nullptr;
 
     if (_currentToken.getType() != eTokenType::RPAREN) {
         arg = expression();
@@ -137,46 +137,46 @@ std::unique_ptr<Node> Parser::call_func(std::unique_ptr<Node> symbol_name) {
         while (_currentToken.getType() == eTokenType::COMMA) {
             shift(eTokenType::COMMA);
             auto expr = expression();
-            arg = std::make_unique<BinaryNode>(eTokenType::COMMA, std::move(arg), std::move(expr));
+            arg = std::make_shared<BinaryNode>(eTokenType::COMMA, arg, expr);
         }
     }
     shift(eTokenType::RPAREN);
-    auto call = std::make_unique<BinaryNode>(eTokenType::FUNC, std::move(symbol_name), std::move(arg));
+    auto call = std::make_shared<BinaryNode>(eTokenType::FUNC, symbol_name, arg);
     return call;
 }
 
-std::unique_ptr<Node> Parser::expression() {
+std::shared_ptr<Node> Parser::expression() {
     auto left = term();
     
     while (_currentToken.getType() == eTokenType::PLUS || _currentToken.getType() == eTokenType::MINUS) {
         eTokenType op = _currentToken.getType();
         shift(op);
         auto right = term();
-        left = std::make_unique<BinaryNode>(op, std::move(left), std::move(right));
+        left = std::make_shared<BinaryNode>(op, left, right);
     }
 
     return left;
 }
 
-std::unique_ptr<Node> Parser::term() {
+std::shared_ptr<Node> Parser::term() {
     auto left = factor();
 
     while (_currentToken.getType() == eTokenType::MULTIPLY || _currentToken.getType() == eTokenType::DIVISION) {
         eTokenType op = _currentToken.getType();
         shift(op);
         auto right = factor();
-        left = std::make_unique<BinaryNode>(op, std::move(left), std::move(right));
+        left = std::make_shared<BinaryNode>(op, left, right);
     }
 
     return left;
 }
 
-std::unique_ptr<Node> Parser::factor() {
+std::shared_ptr<Node> Parser::factor() {
     switch (_currentToken.getType()) {
         case eTokenType::NUMBER: {
             float num = _currentToken.getNumber();
             shift(eTokenType::NUMBER);
-            return std::make_unique<NumberNode>(num);
+            return std::make_shared<NumberNode>(num);
         }
         case eTokenType::LPAREN: {
             shift(eTokenType::LPAREN);
@@ -187,13 +187,13 @@ std::unique_ptr<Node> Parser::factor() {
         case eTokenType::STRING: {
             std::string str = _currentToken.getString();
             shift(eTokenType::STRING);
-            return std::make_unique<StringNode>(str);
+            return std::make_shared<StringNode>(str);
         }
         case eTokenType::SYMBOL: {
-            auto sym = std::make_unique<SymbolNode>(_currentToken.getString());
+            auto sym = std::make_shared<SymbolNode>(_currentToken.getString());
             shift(eTokenType::SYMBOL);
             if (_currentToken.getType() == eTokenType::LPAREN) {
-                return call_func(std::move(sym));
+                return call_func(sym);
             }
             else {
                 return sym;

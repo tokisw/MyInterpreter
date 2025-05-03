@@ -25,7 +25,7 @@ bool Interpreter::isNum(Semantic sem) {
 	}
 }
 
-Semantic Interpreter::action(const std::unique_ptr<Node>& node) {
+Semantic Interpreter::action(std::shared_ptr<Node> node) {
 	if (NumberNode* num = dynamic_cast<NumberNode*>(node.get())) {
 		return Semantic(num->getNumber());
 	}
@@ -43,7 +43,7 @@ Semantic Interpreter::action(const std::unique_ptr<Node>& node) {
 		}
 	}
 	else if (BinaryNode* binary = dynamic_cast<BinaryNode*>(node.get())) {
-		std::unique_ptr<Node> Lnode, Rnode;
+		std::shared_ptr<Node> Lnode, Rnode;
 		binary->getNodes(Lnode, Rnode);
 
 		if (binary->getOp() == eTokenType::VARDEF) {
@@ -59,7 +59,7 @@ Semantic Interpreter::action(const std::unique_ptr<Node>& node) {
 		}
 		else if (binary->getOp() == eTokenType::FUNC) {
 			if (SymbolNode* name = dynamic_cast<SymbolNode*>(Lnode.get())) {
-				return callFunc(name->getName(), openArgumentsSE(std::move(Rnode)));
+				return callFunc(name->getName(), openArgumentsSE(Rnode));
 			}
 			else {
 				std::cerr << "InterpretError : called undefined function" << std::endl;
@@ -78,12 +78,12 @@ Semantic Interpreter::action(const std::unique_ptr<Node>& node) {
 		}
 	}
 	else if (TernaryNode* ternary = dynamic_cast<TernaryNode*>(node.get())) {
-		std::unique_ptr<Node> Lnode, Cnode, Rnode;
+		std::shared_ptr<Node> Lnode, Cnode, Rnode;
 		ternary->getNodes(Lnode, Cnode, Rnode);
 		switch (ternary->getOp()) {
 			case eTokenType::FUNCDEF: {
 				if (SymbolNode* name = dynamic_cast<SymbolNode*>(Lnode.get())) {
-					defFunc(name->getName(), std::move(Cnode), std::move(Rnode));
+					defFunc(name->getName(), Cnode, Rnode);
 				}
 				else {
 					std::cerr << "InterpretError : function name must be symbol" << std::endl;
@@ -97,15 +97,15 @@ Semantic Interpreter::action(const std::unique_ptr<Node>& node) {
 	return Semantic();
 }
 
-void Interpreter::defFunc(std::string name, std::unique_ptr<Node> arguments, std::unique_ptr<Node> program) {
+void Interpreter::defFunc(std::string name, std::shared_ptr<Node> arguments, std::shared_ptr<Node> program) {
 	if (_funcAdress.count(name)) {
 		std::cerr << "InterpreterError : define defined function" << std::endl;
 		exit(-1);
 	}
 	else {
 		_funcAdress.emplace(name, _funcNum);
-		_funcProgram.push_back(std::move(program));
-		_funcArguments.push_back(openArgumentsSY(std::move(arguments)));
+		_funcProgram.push_back(program);
+		_funcArguments.push_back(openArgumentsSY(arguments));
 		_funcNum++;
 	}
 }
@@ -124,8 +124,7 @@ Semantic Interpreter::callFunc(std::string name, std::vector<Semantic> arguments
 	for (int i = 0; i < arguments.size(); i++) {
 		defVar(_funcArguments[address][i], arguments[i]);
 	}
-	
-	// –â‘è”­¶
+
 	Semantic res = action(_funcProgram[address]);
 
 	for (int i = 0; i < arguments.size(); i++) {
@@ -134,14 +133,14 @@ Semantic Interpreter::callFunc(std::string name, std::vector<Semantic> arguments
 	return res;
 }
 
-std::vector<std::string> Interpreter::openArgumentsSY(std::unique_ptr<Node> arguments) {
+std::vector<std::string> Interpreter::openArgumentsSY(std::shared_ptr<Node> arguments) {
 	std::vector<std::string> res;
 	if (arguments == nullptr) {
 		return res;
 	}
-	std::unique_ptr<Node> node = std::move(arguments);
+	std::shared_ptr<Node> node = arguments;
 	while (BinaryNode* binary = dynamic_cast<BinaryNode*>(node.get())) {
-		std::unique_ptr<Node> left, right;
+		std::shared_ptr<Node> left, right;
 		binary->getNodes(left, right);
 		if (SymbolNode* sym = dynamic_cast<SymbolNode*>(right.get())) {
 			res.push_back(sym->getName());
@@ -150,7 +149,7 @@ std::vector<std::string> Interpreter::openArgumentsSY(std::unique_ptr<Node> argu
 			std::cerr << "InterpretError : function arguments name must be symbol" << std::endl;
 			exit(-1);
 		}
-		node = std::move(left);
+		node = left;
 	}
 
 	if (SymbolNode* sym = dynamic_cast<SymbolNode*>(node.get())) {
@@ -163,17 +162,17 @@ std::vector<std::string> Interpreter::openArgumentsSY(std::unique_ptr<Node> argu
 	return res;
 }
 
-std::vector<Semantic> Interpreter::openArgumentsSE(std::unique_ptr<Node> arguments) {
+std::vector<Semantic> Interpreter::openArgumentsSE(std::shared_ptr<Node> arguments) {
 	std::vector<Semantic> res;
 	if (arguments == nullptr) {
 		return res;
 	}
-	std::unique_ptr<Node> node = std::move(arguments);
+	std::shared_ptr<Node> node = arguments;
 	while (BinaryNode* binary = dynamic_cast<BinaryNode*>(node.get())) {
-		std::unique_ptr<Node> left, right;
+		std::shared_ptr<Node> left, right;
 		binary->getNodes(left, right);
 		res.push_back(action(right));
-		node = std::move(left);
+		node = left;
 	}
 	res.push_back(action(node));
 	return res;

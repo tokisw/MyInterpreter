@@ -17,7 +17,7 @@ public:
 	void interpret();
 
 private:
-	std::unique_ptr<Node> _ast;
+	std::shared_ptr<Node> _ast;
 
 	int _varNum;
 	std::map<std::string, int> _varAdress;
@@ -25,17 +25,17 @@ private:
 
 	int _funcNum;
 	std::map<std::string, int> _funcAdress;
-	std::vector<std::unique_ptr<Node>> _funcProgram;
+	std::vector<std::shared_ptr<Node>> _funcProgram;
 	std::vector<std::vector<std::string>> _funcArguments;
 
 	bool isNum(Semantic sem);
 
-	Semantic action(const std::unique_ptr<Node>& node);
+	Semantic action(std::shared_ptr<Node> node);
 
-	void defFunc(std::string name, std::unique_ptr<Node> arguments, std::unique_ptr<Node> program);
+	void defFunc(std::string name, std::shared_ptr<Node> arguments, std::shared_ptr<Node> program);
 	Semantic callFunc(std::string name, std::vector<Semantic> arguments);
-	std::vector<std::string> openArgumentsSY(std::unique_ptr<Node> arguments);
-	std::vector<Semantic> openArgumentsSE(std::unique_ptr<Node> arguments);
+	std::vector<std::string> openArgumentsSY(std::shared_ptr<Node> arguments);
+	std::vector<Semantic> openArgumentsSE(std::shared_ptr<Node> arguments);
 
 	void print(Semantic sem);
 

@@ -1,18 +1,7 @@
-func niko(a, b) {
-	print(a + b);
+func sum(a, b) {
+	var v = a+b;
+	print(v);
 }
 
-func sanko(a, b, c) {
-	print(a + b + c);
-}
-
-func yonko(a, b, c, d) {
-	print(a + b + c + d);
-}
-
-func hello() {
-	print("hello");
-}
-
-hello();
-hello();
+sum(1, 3);
+print(v);

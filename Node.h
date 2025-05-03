@@ -35,41 +35,41 @@ private:
 
 class UnaryNode : public Node {
 public:
-	explicit UnaryNode(eTokenType op, std::unique_ptr<Node> node);
+	explicit UnaryNode(eTokenType op, std::shared_ptr<Node> node);
 	void show(int index) override;
 
-	std::unique_ptr<Node> getNode();
+	std::shared_ptr<Node> getNode();
 	eTokenType getOp() const;
 
 private:
 	eTokenType _op;
-	std::unique_ptr<Node> _node;
+	std::shared_ptr<Node> _node;
 };
 
 class BinaryNode : public Node {
 public:
-	explicit BinaryNode(eTokenType op, std::unique_ptr<Node> left, std::unique_ptr<Node> right);
+	explicit BinaryNode(eTokenType op, std::shared_ptr<Node> left, std::shared_ptr<Node> right);
 	void show(int index) override;
 
-	void getNodes(std::unique_ptr<Node>& left, std::unique_ptr<Node>& right);
+	void getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& right);
 	eTokenType getOp() const;
 
 private:
 	eTokenType _op;
-	std::unique_ptr<Node> _left, _right;
+	std::shared_ptr<Node> _left, _right;
 };
 
 class TernaryNode : public Node {
 public:
-	explicit TernaryNode(eTokenType op, std::unique_ptr<Node> left, std::unique_ptr<Node> center, std::unique_ptr<Node> right);
+	explicit TernaryNode(eTokenType op, std::shared_ptr<Node> left, std::shared_ptr<Node> center, std::shared_ptr<Node> right);
 	void show(int index) override;
 
-	void getNodes(std::unique_ptr<Node>& left, std::unique_ptr<Node>& center, std::unique_ptr<Node>& right);
+	void getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& center, std::shared_ptr<Node>& right);
 	eTokenType getOp() const;
 
 private:
 	eTokenType _op;
-	std::unique_ptr<Node> _left, _center, _right;
+	std::shared_ptr<Node> _left, _center, _right;
 };
 
 class SymbolNode : public Node {

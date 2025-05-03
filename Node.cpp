@@ -26,11 +26,11 @@ void StringNode::show(int index) {
 }
 
 
-UnaryNode::UnaryNode(eTokenType op, std::unique_ptr<Node> node)
-	:_op(op), _node(std::move(node)) {}
+UnaryNode::UnaryNode(eTokenType op, std::shared_ptr<Node> node)
+	:_op(op), _node(node) {}
 
-std::unique_ptr<Node> UnaryNode::getNode() {
-	return std::move(_node);
+std::shared_ptr<Node> UnaryNode::getNode() {
+	return _node;
 }
 
 eTokenType UnaryNode::getOp() const {
@@ -49,12 +49,12 @@ void UnaryNode::show(int index) {
 }
 
 
-BinaryNode::BinaryNode(eTokenType op, std::unique_ptr<Node> left, std::unique_ptr<Node> right)
-	:_op(op), _left(std::move(left)), _right(std::move(right)) {}
+BinaryNode::BinaryNode(eTokenType op, std::shared_ptr<Node> left, std::shared_ptr<Node> right)
+	:_op(op), _left(left), _right(right) {}
 
-void BinaryNode::getNodes(std::unique_ptr<Node>& left, std::unique_ptr<Node>& right) {
-	left = std::move(_left);
-	right = std::move(_right);
+void BinaryNode::getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& right) {
+	left = _left;
+	right = _right;
 }
 
 eTokenType BinaryNode::getOp() const {
@@ -82,13 +82,13 @@ void BinaryNode::show(int index) {
 }
 
 
-TernaryNode::TernaryNode(eTokenType op, std::unique_ptr<Node> left, std::unique_ptr<Node> center, std::unique_ptr<Node> right)
-	:_op(op), _left(std::move(left)), _right(std::move(right)), _center(std::move(center)) {}
+TernaryNode::TernaryNode(eTokenType op, std::shared_ptr<Node> left, std::shared_ptr<Node> center, std::shared_ptr<Node> right)
+	:_op(op), _left(left), _right(right), _center(center) {}
 
-void TernaryNode::getNodes(std::unique_ptr<Node>& left, std::unique_ptr<Node>& center, std::unique_ptr<Node>& right) {
-	left = std::move(_left);
-	center = std::move(_center);
-	right = std::move(_right);
+void TernaryNode::getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& center, std::shared_ptr<Node>& right) {
+	left = _left;
+	center = _center;
+	right = _right;
 }
 
 eTokenType TernaryNode::getOp() const {
