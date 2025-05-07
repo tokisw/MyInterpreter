@@ -3,5 +3,9 @@ func sum(a, b) {
 	print(v);
 }
 
+func sums(a, b, c) {
+	print(a+b+c);
+}
+
 sum(1, 3);
-print(v);
+sum(5, 6);

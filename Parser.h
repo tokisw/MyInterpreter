@@ -36,17 +36,24 @@ program ::= ( statement )*
 statement ::= PRINT "(" expression ")" ";"
               | define_var ";"
 			  | SYMBOL  "=" expression ";"
-			  | compound
 			  | call_func ";"
+			  | compound
 
+　関数中身
 compound ::= "{" statement* "}"
+
+　if文
+@ state_if ::= IF "(" expression ")" statement
+
+　while文
+@ state_while ::= WHILE "(" expression ")" statement
 
 　宣言
 declaration ::= VAR SYMBOL ( "=" expression )
 			    | FUNC SYMBOL "(" ( arg_name ( "," arg_name )* ) ")" compound
 
 　関数呼び出し
-@ call_func ::= SYMBOL "(" ( expression ( "," expression )* ")"
+call_func ::= SYMBOL "(" ( expression ( "," expression )* ")"
 
 　式
 expression ::= term ( ( "+" | "-" ) temr )*

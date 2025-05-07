@@ -52,7 +52,7 @@ void UnaryNode::show(int index) {
 BinaryNode::BinaryNode(eTokenType op, std::shared_ptr<Node> left, std::shared_ptr<Node> right)
 	:_op(op), _left(left), _right(right) {}
 
-void BinaryNode::getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& right) {
+void BinaryNode::getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& right) const {
 	left = _left;
 	right = _right;
 }
@@ -85,7 +85,7 @@ void BinaryNode::show(int index) {
 TernaryNode::TernaryNode(eTokenType op, std::shared_ptr<Node> left, std::shared_ptr<Node> center, std::shared_ptr<Node> right)
 	:_op(op), _left(left), _right(right), _center(center) {}
 
-void TernaryNode::getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& center, std::shared_ptr<Node>& right) {
+void TernaryNode::getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& center, std::shared_ptr<Node>& right) const {
 	left = _left;
 	center = _center;
 	right = _right;

@@ -20,11 +20,11 @@ private:
 	std::shared_ptr<Node> _ast;
 
 	int _varNum;
-	std::map<std::string, int> _varAdress;
+	std::map<std::string, int> _varAddress;
 	std::vector<float> _var;
 
 	int _funcNum;
-	std::map<std::string, int> _funcAdress;
+	std::map<std::string, int> _funcAddress;
 	std::vector<std::shared_ptr<Node>> _funcProgram;
 	std::vector<std::vector<std::string>> _funcArguments;
 

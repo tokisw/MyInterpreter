@@ -51,7 +51,7 @@ public:
 	explicit BinaryNode(eTokenType op, std::shared_ptr<Node> left, std::shared_ptr<Node> right);
 	void show(int index) override;
 
-	void getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& right);
+	void getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& right) const;
 	eTokenType getOp() const;
 
 private:
@@ -64,7 +64,7 @@ public:
 	explicit TernaryNode(eTokenType op, std::shared_ptr<Node> left, std::shared_ptr<Node> center, std::shared_ptr<Node> right);
 	void show(int index) override;
 
-	void getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& center, std::shared_ptr<Node>& right);
+	void getNodes(std::shared_ptr<Node>& left, std::shared_ptr<Node>& center, std::shared_ptr<Node>& right) const;
 	eTokenType getOp() const;
 
 private:

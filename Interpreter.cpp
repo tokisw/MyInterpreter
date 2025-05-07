@@ -1,7 +1,7 @@
 #include "Interpreter.h"
 
 Interpreter::Interpreter(std::string source)
-	:_var(), _varAdress(), _varNum(0), _funcProgram(), _funcArguments(), _funcAdress(), _funcNum(0)
+	:_var(), _varAddress(), _varNum(0), _funcProgram(), _funcArguments(), _funcAddress(), _funcNum(0)
 {
 	Lexer lexer(source);
 	Parser parser(lexer);
@@ -98,12 +98,12 @@ Semantic Interpreter::action(std::shared_ptr<Node> node) {
 }
 
 void Interpreter::defFunc(std::string name, std::shared_ptr<Node> arguments, std::shared_ptr<Node> program) {
-	if (_funcAdress.count(name)) {
+	if (_funcAddress.count(name)) {
 		std::cerr << "InterpreterError : define defined function" << std::endl;
 		exit(-1);
 	}
 	else {
-		_funcAdress.emplace(name, _funcNum);
+		_funcAddress.emplace(name, _funcNum);
 		_funcProgram.push_back(program);
 		_funcArguments.push_back(openArgumentsSY(arguments));
 		_funcNum++;
@@ -111,25 +111,25 @@ void Interpreter::defFunc(std::string name, std::shared_ptr<Node> arguments, std
 }
 
 Semantic Interpreter::callFunc(std::string name, std::vector<Semantic> arguments) {
-	if (!_funcAdress.count(name)) {
+	if (!_funcAddress.count(name)) {
 		std::cerr << "InterpretError : call not defined function" << std::endl;
 		exit(-1);
 	}
-	int address = _funcAdress[name];
+	int address = _funcAddress[name];
 	if (arguments.size() != _funcArguments[address].size()) {
 		std::cerr << "InterpretError : not matched arguments" << std::endl;
 		std::cerr << "defined_size:" << _funcArguments[address].size() << " given_size:" << arguments.size() << std::endl;
 		exit(-1);
 	}
+	int temp_var_num = _varNum;
+	std::map<std::string, int> temp_address = _varAddress;
+	//ª’´d‚¢‰Â”\«‘å
 	for (int i = 0; i < arguments.size(); i++) {
 		defVar(_funcArguments[address][i], arguments[i]);
 	}
-
 	Semantic res = action(_funcProgram[address]);
-
-	for (int i = 0; i < arguments.size(); i++) {
-		delVar(_funcArguments[address][i]);
-	}
+	_varAddress = temp_address;
+	_varNum = temp_var_num;
 	return res;
 }
 
@@ -197,8 +197,8 @@ void Interpreter::print(Semantic sem) {
 }
 
 void Interpreter::assign(std::string name, Semantic val) {
-	if (_varAdress.count(name)) {
-		_var[_varAdress.at(name)] = val.getNumber();
+	if (_varAddress.count(name)) {
+		_var[_varAddress.at(name)] = val.getNumber();
 	}
 	else {
 		std::cerr << "InterpretError : assigned not declared variable" << std::endl;
@@ -207,20 +207,22 @@ void Interpreter::assign(std::string name, Semantic val) {
 }
 
 void Interpreter::defVar(std::string name, Semantic val) {
-	if (_varAdress.count(name)) {
+	if (_varAddress.count(name)) {
 		std::cerr << "InterpretError : declare declared variable" << std::endl;
 		exit(-1);
 	}
 	else {
-		_varAdress.emplace(name, _varNum);
-		_var.push_back(val.getNumber());
+		_varAddress.emplace(name, _varNum);
+		if (_var.size() > _varNum) _var[_varNum] = val.getNumber();
+		else _var.push_back(val.getNumber());
 		_varNum++;
 	}
 }
 
 void Interpreter::delVar(std::string name) {
-	if (_varAdress.count(name)) {
-		_varAdress.erase(name);
+	if (_varAddress.count(name)) {
+		_varAddress.erase(name);
+		_varNum--;
 	}
 	else {
 		std::cerr << "InterpretError : cannot delete undefined variable" << std::endl;
@@ -229,8 +231,8 @@ void Interpreter::delVar(std::string name) {
 }
 
 float Interpreter::getVar(std::string name) {
-	if (_varAdress.count(name)) {
-		return _var[_varAdress.at(name)];
+	if (_varAddress.count(name)) {
+		return _var[_varAddress.at(name)];
 	}
 	else {
 		std::cerr << "InterpretError : called not declared variable" << std::endl;
